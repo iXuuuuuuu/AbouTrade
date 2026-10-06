@@ -1,46 +1,17 @@
+此项目基于forge-1.20.1-47.4.10-mdk开发|This project is based on forge-1.20.1-47.4.10-mdk
 
-Source installation information for modders
--------------------------------------------
-This code follows the Minecraft Forge installation methodology. It will apply
-some small patches to the vanilla MCP source code, giving you and it access 
-to some of the data and functions you need to build a successful mod.
-
-Note also that the patches are built against "un-renamed" MCP source code (aka
-SRG Names) - this means that you will not be able to read them directly against
-normal code.
-
-Setup Process:
-==============================
-
-Step 1: Open your command-line and browse to the folder where you extracted the zip file.
-
-Step 2: You're left with a choice.
-If you prefer to use Eclipse:
-1. Run the following command: `./gradlew genEclipseRuns`
-2. Open Eclipse, Import > Existing Gradle Project > Select Folder 
-   or run `gradlew eclipse` to generate the project.
-
-If you prefer to use IntelliJ:
-1. Open IDEA, and import project.
-2. Select your build.gradle file and have it import.
-3. Run the following command: `./gradlew genIntellijRuns`
-4. Refresh the Gradle Project in IDEA if required.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can 
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-(this does not affect your code) and then start the process again.
-
-Mapping Names:
-=============================
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license, if you do not agree with it you can change your mapping names to other crowdsourced names in your 
-build.gradle. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
-
-Additional Resources: 
-=========================
-Community Documentation: https://docs.minecraftforge.net/en/1.20.1/gettingstarted/
-LexManos' Install Video: https://youtu.be/8VEdtQLuLO0
-Forge Forums: https://forums.minecraftforge.net/
-Forge Discord: https://discord.minecraftforge.net/
+Chinese：  
+MOD名称：有关交易（AboutTrade）  
+前置MOD：无  
+功能：用于刷新交易列表以及一键交易,提供配置文件进入中英文切换，启用刷新，启用一键交易。  
+安装方法：将MOD添加到mod文件夹  
+版本：Java 1.20.1  
+Forge：47.4.10(47.4.26无法使用，其余版本请自行测试)  
+___________________________________________________________________________________________________________________________________________________________________
+Englishi:  
+Mod name:AboutTrade  
+Prerequisite mod:none  
+Function:Used to refresh the trade list and make one-click trades.Provie config to Switch between Chinese and English,Enable one-click refresh andone-click trading.  
+Installation:Add the MOD to the mod folder  
+Version:JAVA 1.20.1  
+Forge：47.4.10(Version 47.4.26 doesn't work, please test the other versions yourself)  
