@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: abouttrade
+Specification-Vendor: Xuxu123
+Specification-Version: 1
+Implementation-Title: AbouTrade
+Implementation-Version: 1.0.0
+Implementation-Vendor: Xuxu123
+Implementation-Timestamp: 2026-10-06T12:40:58+0800
+
