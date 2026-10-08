@@ -1,0 +1,16 @@
+{
+  "item.abouttrade.villager_capsule": "村民胶囊",
+  "abouttrade.capsule.empty": "空胶囊",
+  "abouttrade.capsule.name": "名字：%s",
+  "abouttrade.capsule.profession": "职业：%s",
+  "abouttrade.capsule.level": "等级：%s",
+  "abouttrade.capsule.fail.trading": "§c该村民正在交易中，无法收集",
+  "abouttrade.capsule.fail.baby": "§c该村民是幼年，无法收集",
+  "abouttrade.profession.none": "无业",
+  "abouttrade.level.1": "新手",
+  "abouttrade.level.2": "学徒",
+  "abouttrade.level.3": "老手",
+  "abouttrade.level.4": "专家",
+  "abouttrade.level.5": "大师",
+  "abouttrade.level.unknown": "未知"
+}

@@ -1,0 +1,16 @@
+{
+  "item.abouttrade.villager_capsule": "Villager Capsule",
+  "abouttrade.capsule.empty": "Empty Capsule",
+  "abouttrade.capsule.name": "Name: %s",
+  "abouttrade.capsule.profession": "Profession: %s",
+  "abouttrade.capsule.level": "Level: %s",
+  "abouttrade.capsule.fail.trading": "§cThis villager is trading, cannot collect",
+  "abouttrade.capsule.fail.baby": "§cBaby villagers cannot be collected",
+  "abouttrade.profession.none": "Unemployed",
+  "abouttrade.level.1": "Novice",
+  "abouttrade.level.2": "Apprentice",
+  "abouttrade.level.3": "Journeyman",
+  "abouttrade.level.4": "Expert",
+  "abouttrade.level.5": "Master",
+  "abouttrade.level.unknown": "Unknown"
+}
