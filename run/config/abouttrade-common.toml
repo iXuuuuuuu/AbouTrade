@@ -1,9 +1,0 @@
-
-[general]
-	#按钮显示语言，可选 en 或 zh//Language Options en = english zh=chinese
-	language = "zh"
-	#是否启用刷新按钮（对未交易过的村民换一批交易）//Enable Disable the refresh button
-	enable_refresh = true
-	#是否启用交易按钮（一次交易到材料或次数上限）//Enable Disable the trade button(A single transaction reaches the limit)
-	enable_trade = true
-
