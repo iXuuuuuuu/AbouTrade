@@ -20,20 +20,15 @@ import java.util.function.Supplier;
 public class TradeAllPacket {
 
     public TradeAllPacket() {}
-
     public void toBytes(FriendlyByteBuf buf) {}
-
     public TradeAllPacket(FriendlyByteBuf buf) {}
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            // 配置禁用时忽略请求
             if (!Config.ENABLE_TRADE.get()) return;
 
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
-
-            // 只在村民交易菜单中生效
             if (!(player.containerMenu instanceof MerchantMenu merchantMenu)) return;
 
             for (Slot slot : merchantMenu.slots) {
@@ -45,13 +40,8 @@ public class TradeAllPacket {
                     }
 
                     Merchant merchant = getMerchantFromContainer(container);
-                    if (!(merchant instanceof Villager villager)) {
-                        player.displayClientMessage(
-                                Component.literal("§c未找到村民，无法交易"), true);
-                        return;
-                    }
+                    if (!(merchant instanceof Villager villager)) return;
 
-                    // 检查交易次数是否用完
                     int remainingUses = offer.getMaxUses() - offer.getUses();
                     if (remainingUses <= 0) {
                         player.displayClientMessage(
@@ -59,7 +49,6 @@ public class TradeAllPacket {
                         return;
                     }
 
-                    // 计算最大可交易次数（不超过剩余次数）
                     int maxTrades = calculateMaxTrades(player, container, offer);
                     if (maxTrades <= 0) {
                         player.displayClientMessage(
@@ -68,17 +57,18 @@ public class TradeAllPacket {
                     }
                     maxTrades = Math.min(maxTrades, remainingUses);
 
-                    // 循环执行交易，同时累积村民经验
+                    // 循环执行交易，累积经验
                     int totalXpGained = 0;
                     for (int i = 0; i < maxTrades; i++) {
                         executeTrade(player, container, offer);
                         if (offer.shouldRewardExp()) {
-                            totalXpGained += 3 + player.getRandom().nextInt(4);
+                            totalXpGained += 3 + player.getRandom().nextInt(4);  // 3~6 点
                         }
                     }
 
                     // 结算经验与升级
                     if (totalXpGained > 0) {
+                        // ---- 村民经验与升级 ----
                         int newXp = villager.getVillagerXp() + totalXpGained;
                         int oldLevel = villager.getVillagerData().getLevel();
                         int newLevel = getLevelForXp(newXp);
@@ -88,15 +78,20 @@ public class TradeAllPacket {
                             try {
                                 updateVillagerTrades(villager);
                             } catch (Throwable e) {
-                                player.displayClientMessage(
-                                        Component.literal("§c升级刷新交易失败，请查看日志"), true);
                                 e.printStackTrace();
                             }
                         }
                         villager.setVillagerXp(newXp);
+
+                        // ---- 玩家获得经验（仅基础经验，无额外奖励）----
+                        player.giveExperiencePoints(totalXpGained);
+
+                        player.displayClientMessage(
+                                Component.literal("已交易 " + maxTrades + " 次，获得 " + totalXpGained + " 经验"),
+                                true);
                     }
 
-                    // 同步新交易列表、等级和经验到客户端
+                    // 同步新交易列表到客户端
                     player.connection.send(new ClientboundMerchantOffersPacket(
                             merchantMenu.containerId,
                             villager.getOffers(),
@@ -106,9 +101,6 @@ public class TradeAllPacket {
                             true
                     ));
 
-                    player.displayClientMessage(
-                            Component.literal("已交易 " + maxTrades + " 次，获得 " + totalXpGained + " 经验"),
-                            true);
                     break;
                 }
             }
@@ -117,10 +109,9 @@ public class TradeAllPacket {
     }
 
     // -------------------------------------------------------------------
-    // 反射辅助方法：兼容开发环境（官方名）和生产环境（SRG 名）
+    // 反射辅助方法：兼容开发环境和生产环境
     // -------------------------------------------------------------------
 
-    /** 通过字段类型查找 Merchant，完全避开 SRG 名称问题 */
     private static Merchant getMerchantFromContainer(MerchantContainer container) {
         for (java.lang.reflect.Field field : MerchantContainer.class.getDeclaredFields()) {
             if (Merchant.class.isAssignableFrom(field.getType())) {
@@ -135,7 +126,6 @@ public class TradeAllPacket {
         return null;
     }
 
-    /** 调用 Villager 的 updateTrades 方法 */
     private static void updateVillagerTrades(Villager villager) throws Exception {
         String[] candidates = {"m_80642_", "updateTrades"};
         Exception lastException = null;
@@ -154,16 +144,14 @@ public class TradeAllPacket {
     // 业务逻辑辅助方法
     // -------------------------------------------------------------------
 
-    /** 根据累计经验值计算村民应有的等级 */
     private int getLevelForXp(int xp) {
-        if (xp >= 250) return 5; // 大师
-        if (xp >= 150) return 4; // 专家
-        if (xp >= 70) return 3;  // 老手
-        if (xp >= 10) return 2;  // 学徒
-        return 1;                // 新手
+        if (xp >= 250) return 5;
+        if (xp >= 150) return 4;
+        if (xp >= 70) return 3;
+        if (xp >= 10) return 2;
+        return 1;
     }
 
-    /** 计算最大可交易次数：交易槽 + 背包里的材料都算上 */
     private int calculateMaxTrades(ServerPlayer player, MerchantContainer container, MerchantOffer offer) {
         ItemStack costA = offer.getCostA();
         ItemStack costB = offer.getCostB();
@@ -175,19 +163,14 @@ public class TradeAllPacket {
         return Math.max(trades, 0);
     }
 
-    /** 统计交易槽 + 玩家背包中某种物品的数量 */
     private int countItem(ServerPlayer player, MerchantContainer container, ItemStack target) {
         int count = 0;
-
-        // 交易槽前两个槽位是输入材料
         for (int i = 0; i < 2; i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty() && stack.getItem() == target.getItem()) {
                 count += stack.getCount();
             }
         }
-
-        // 玩家背包
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
             if (!stack.isEmpty() && stack.getItem() == target.getItem()) {
@@ -197,7 +180,6 @@ public class TradeAllPacket {
         return count;
     }
 
-    /** 执行一次交易 */
     private void executeTrade(ServerPlayer player, MerchantContainer container, MerchantOffer offer) {
         removeItem(player, container, offer.getCostA(), offer.getCostA().getCount());
         if (!offer.getCostB().isEmpty()) {
@@ -210,7 +192,6 @@ public class TradeAllPacket {
         offer.increaseUses();
     }
 
-    /** 从交易槽 + 背包扣除物品 */
     private void removeItem(ServerPlayer player, MerchantContainer container, ItemStack target, int amount) {
         int remaining = amount;
 
